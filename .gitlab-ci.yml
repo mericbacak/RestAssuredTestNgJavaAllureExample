@@ -1,0 +1,83 @@
+stages:
+  - sleep
+  - test
+  - deploy
+  - notification
+  
+variables:
+  bucketName: "HerokuApp-test"
+
+
+wait_for_deploy:
+  stage: sleep
+  image:
+    name: alpine:latest
+
+  script:
+    - echo "Waiting stage start"
+    - sleep 360  # 300 saniye bekletme (5 dakika)
+    - echo "Completed"
+
+  only:
+    - triggers
+
+run_test:
+  stage: test
+  image:
+    name: maven:3.8.4-openjdk-17
+
+  script:
+    - mvn clean test
+    - mv allure-results target
+    - mvn allure:report
+    - mkdir public
+    - mv target/site/allure-maven-plugin/* public
+    - ls -la
+
+
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 week
+
+  only:
+    - triggers
+
+deploy_minio:
+  stage: deploy
+  image:
+    name: bitnami/minio-client:2023.8.18
+
+  script:
+    - mc config host add myminio https://minio-test.viennalife.com.tr ${minioAccessKey} ${minioSecretKey}  
+    - export SOURCE_FOLDER=public
+    - export CURRENT_DATE=$(date +"%Y-%m-%d-%H-%M")
+
+    # MinIO'ya dosyayı yükle
+    - mc cp --recursive $SOURCE_FOLDER myminio/allure-reports/${bucketName}/${CURRENT_DATE}/
+    # Variables ile CURRENT_DATE'i diğer aşamaya geçir
+    - echo "CURRENT_DATE=$CURRENT_DATE" >> $CI_PROJECT_DIR/deploy_minio_variables
+  
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/deploy_minio_variables
+
+  only:
+    - triggers
+
+send_slack_notification:
+  stage: notification
+  image:
+    name: alpine:latest
+
+  before_script:
+    - apk update
+    - apk add curl
+
+  script:
+    # Variables dosyasını oku ve CURRENT_DATE'i al
+    - source $CI_PROJECT_DIR/deploy_minio_variables
+    - export minio_url=https://minio-test.viennalife.com.tr/allure-reports/${bucketName}/$CURRENT_DATE/public/index.html
+    - /bin/ash send_teams_notification.sh $TEAMS_WEBHOOK_URL $minio_url
+  only:
+    - triggers
