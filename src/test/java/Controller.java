@@ -44,10 +44,79 @@ public class Controller {
         assertions.ReqresInGetListUsers4Response(response);
     }
 
-    public void ReqresinGetUserIdResponse(String id,String email,String first_name,String last_name,String avatar) {
-        logger.info("RequestPath " + cons.requestPath2 + "users/"+id);
-        Response response = given().contentType(ContentType.JSON).when().get(cons.requestPath2 + "users/"+id);
+    public void ReqresinGetUserIdResponse(String id, String email, String first_name, String last_name, String avatar) {
+        logger.info("RequestPath " + cons.requestPath2 + "users/" + id);
+        Response response = given().contentType(ContentType.JSON).when().get(cons.requestPath2 + "users/" + id);
         //logger.info("Response: "+response.asString());
-        assertions.ReqresInGetUserIDResponse(response,id,email,first_name,last_name,avatar);
+        assertions.ReqresInGetUserIDResponse(response, id, email, first_name, last_name, avatar);
+    }
+
+    public void ReqresinCreateUserResponse(String Path, String requestBody, String name, String job, String surname, String CountryCode, int ResponseCode) {
+        logger.info("RequestPath " + cons.requestPath2 + "users/");
+        Response response = given().contentType(ContentType.JSON).body(requestBody).when().post(cons.requestPath2 + "users/");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInCreateUserResponse(response, Path, name, job, surname, CountryCode, ResponseCode);
+    }
+
+    public void ReqresinPutUserResponse(String Path, String requestBody, String name, String job, String surname, String CountryCode, int ResponseCode) {
+        logger.info("RequestPath " + cons.requestPath2 + "users/");
+        Response response = given().contentType(ContentType.JSON).body(requestBody).when().put(cons.requestPath2 + "users/");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInCreateUserResponse(response, Path, name, job, surname, CountryCode, ResponseCode);
+    }
+
+    public void ReqresinPatchUserResponse(String Path, String requestBody, String name, String job, String surname, String CountryCode, int ResponseCode) {
+        logger.info("RequestPath " + cons.requestPath2 + "users/");
+        Response response = given().contentType(ContentType.JSON).body(requestBody).when().patch(cons.requestPath2 + "users/");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInCreateUserResponse(response, Path, name, job, surname, CountryCode, ResponseCode);
+    }
+
+    public void ReqresinDeleteUserResponse() {
+        logger.info("RequestPath " + cons.requestPath2 + "users/7");
+        Response response = given().contentType(ContentType.JSON).when().delete(cons.requestPath2 + "users/7");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInDeleteUserResponse(response);
+    }
+
+    public void ReqresinRegisterFailResponse(String Path, String ErrorMessage, int ResponseCode) {
+        logger.info("RequestPath " + cons.requestPath2 + "register");
+        Response response = given().contentType(ContentType.JSON).body(cons.ReqresInRegisterLoginUnSuccesful).when().post(cons.requestPath2 + "register");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInRegisterLoginUnSuccessfulUserResponse(response, Path, ErrorMessage, ResponseCode);
+    }
+
+    public void ReqresinLoginFailResponse(String Path, String ErrorMessage, int ResponseCode) {
+        logger.info("RequestPath " + cons.requestPath2 + "login");
+        Response response = given().contentType(ContentType.JSON).body(cons.ReqresInRegisterLoginUnSuccesful).when().post(cons.requestPath2 + "login");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInRegisterLoginUnSuccessfulUserResponse(response, Path, ErrorMessage, ResponseCode);
+    }
+
+    public void ReqresinLoginFail2Response(String Path, String ErrorMessage, int ResponseCode) {
+        logger.info("RequestPath " + cons.requestPath2 + "login");
+        Response response = given().contentType(ContentType.JSON).body(cons.ReqresInRegisterLogin2UnSuccesful).when().post(cons.requestPath2 + "login");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInRegisterLoginUnSuccessfulUserResponse(response, Path, ErrorMessage, ResponseCode);
+    }
+
+    public void ReqresinRegisterFail2Response(String Path, String ErrorMessage, int ResponseCode) {
+        logger.info("RequestPath " + cons.requestPath2 + "register");
+        Response response = given().contentType(ContentType.JSON).body(cons.ReqresInRegisterLogin2UnSuccesful).when().post(cons.requestPath2 + "register");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInRegisterLoginUnSuccessfulUserResponse(response, Path, ErrorMessage, ResponseCode);
+    }
+
+    public void ReqresinRegisterSuccessResponse(String Path, String ErrorMessage, int ResponseCode) {
+        logger.info("RequestPath " + cons.requestPath2 + "register");
+        Response response = given().contentType(ContentType.JSON).body(cons.ReqresInRegisterLoginSuccesful).when().post(cons.requestPath2 + "register");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInRegisterLoginUnSuccessfulUserResponse(response, Path, ErrorMessage, ResponseCode);
+    }
+    public void ReqresinLoginSuccessResponse(String Path, String ErrorMessage, int ResponseCode) {
+        logger.info("RequestPath " + cons.requestPath2 + "login");
+        Response response = given().contentType(ContentType.JSON).body(cons.ReqresInRegisterLoginSuccesful).when().post(cons.requestPath2 + "login");
+        //logger.info("Response: "+response.asString());
+        assertions.ReqresInRegisterLoginUnSuccessfulUserResponse(response, Path, ErrorMessage, ResponseCode);
     }
 }
